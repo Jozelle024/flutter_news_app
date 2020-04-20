@@ -21,6 +21,9 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  consumer: ^2.0.2
+  provider: ^4.0.4
+  http: ^0.12.0+4
   flutter:
     sdk: flutter
 
