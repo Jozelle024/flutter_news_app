@@ -1,23 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_news_app/screen/animations.dart';
+import 'package:flutter_news_app/screen/bimby_ui.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_news_app/screen/news_list_screen.dart';
-import 'package:flutter_news_app/provider/news.dart';
-void main() => runApp(MyApp());
+import 'package:flutter_news_app/news_bloc.dart';
+import 'package:flutter_news_app/models/article.dart';
+
+const String NewsBox = 'NewsBox';
+
+void main() async {
+    await Hive.initFlutter();
+    Hive.registerAdapter(ArticleAdapter());
+
+    await Hive.openBox<Article>(NewsBox);
+    runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (ctx) => News(),
-        child: MaterialApp(
-        title: 'Flutter Demo',
+    return MultiProvider(
+      providers: [
+        Provider<NewsBloc>(create: (_) => NewsBloc()),
+      ],
+      child: MaterialApp(
+        title: 'FlutterNews App',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+            primarySwatch: Colors.blue,
         ),
+        initialRoute: '/',
         routes: {
-          '/': (context) => new NewsListScreen()
-          //'/news-detail': (context) => NewsDetail()
+          '/': (context) => Bimby(title: 'Bimby prova'),
+//          '/fav': (context) => FavNews(),
+//          '/search': (context) => Search(),
         },
       ),
     );

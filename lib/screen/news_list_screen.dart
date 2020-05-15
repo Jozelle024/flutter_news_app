@@ -2,41 +2,75 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_news_app/provider/news.dart';
 import 'package:responsive_grid/responsive_grid.dart';
-
+import 'package:flutter_news_app/news_bloc.dart';
+import 'package:flutter_news_app/models/article.dart';
 
 class NewsListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final newsProvider = Provider.of<News>(context);
-    var newsList = newsProvider.articles;
+    //final newsProvider = Provider.of<News>(context);
+    //var newsList = newsProvider.articles;
     // newsList.length == 0 ? Container(child: new CircularProgressIndicator()) :
-    return  SingleChildScrollView(
-      child: ResponsiveGridRow(
-          children: List.generate(newsList.length, (i){
-            return
-              ResponsiveGridCol(
-                md: 3,
-                xs: 6,
-                child: NewsItem(newsList[i].author, newsList[i].title, newsList[i].urlToImage)
-              );
-          })
+    final bloc = Provider.of<NewsBloc>(context);
+    bloc.getNews();
+    return  
+      DefaultTabController(
+        length: 4, 
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('Flutter news App'),
+            /* bottom: TabBar(
+              tabs: <Widget>[
+                Tab(text: 'General'),
+                Tab(text: 'Business'),
+                Tab(text: 'Entertainment'),
+                Tab(text: 'Health')
+              ]
+              ) */
+          ),
+          body: SingleChildScrollView(
+                    /* ResponsiveGridRow(
+                      children: 
+                      List.generate(newsList.length, (i){
+                        return
+                          ResponsiveGridCol(
+                            md: 4,
+                            xs: 12,
+                          child: NewsItem(newsList[i].author, newsList[i].title, newsList[i].urlToImage)
+                          );
+                      })  */
+                    child: Center(
+                        child: StreamBuilder<List<Article>>(
+                        stream: bloc.articles,
+                        builder: (context, AsyncSnapshot<List<Article>> snapshot) {
+                          if (snapshot.hasData) {
+                              return
+                                ResponsiveGridRow(
+                                  children: List.generate(snapshot.data.length, (position){
+                                    return ResponsiveGridCol( md: 4,xs: 12,
+                                    child: NewsItem(snapshot.data[position])
+                                  );
+                                })
+                              );  
+                          } else return CircularProgressIndicator();
+                        })
+                    )
+          )
         )
-    );
+      );
   }
 }
 
 class NewsItem extends StatelessWidget {
-  final String author;
-  final String title;
-  final String image; 
+  final Article article;  
 
-  NewsItem(this.author, this.title, this.image);
+  NewsItem(this.article);
   @override
   Widget build(BuildContext context) {
     return 
     Container(
       height: 200,
-      width: 400,
+      width: 100,
       child: Card(
         clipBehavior: Clip.antiAlias,
         elevation: 4,
@@ -45,8 +79,8 @@ class NewsItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Container(
-                    child: this.image != null ? Image.network(
-                        this.image,
+                    child: this.article.urlToImage != null ? Image.network(
+                        this.article.urlToImage,
                         height: 150,
                         fit: BoxFit.fill
                     ) : Container()
@@ -55,7 +89,7 @@ class NewsItem extends StatelessWidget {
                     child: Padding(
                         padding: EdgeInsets.all(4),
                         child: Text(
-                            this.title, 
+                            this.article.title, 
                             style: TextStyle(fontSize: 12),
                             overflow: TextOverflow.ellipsis,
                           )
