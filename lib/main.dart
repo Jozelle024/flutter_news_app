@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_google_maps/flutter_google_maps.dart';
+import 'package:flutter_news_app/bimby/screen/homepage.dart';
 import 'package:flutter_news_app/google_map/googleMapExample.dart';
 import 'package:flutter_news_app/screen/animations.dart';
 import 'package:flutter_news_app/screen/bimby_ui.dart';
@@ -35,14 +36,17 @@ class MyApp extends StatelessWidget {
         Provider<NewsBloc>(create: (_) => NewsBloc()),
       ],
       child: MaterialApp(
-        title: 'FlutterNews App',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primaryColor: Colors.white,
+            fontFamily: 'Bimby'
         ),
         initialRoute: '/',
         routes: {
-          '/': (context) => GoogleMapExample()
+          '/': (context) => BimbyHomePage()
+          //'/': (context) => GoogleMapExample()
           //'/': (context) => Bimby(title: 'Bimby prova'),
+          // '/': (context) => NewsListScreen()
 //          '/fav': (context) => FavNews(),
 //          '/search': (context) => Search(),
         },
